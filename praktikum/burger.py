@@ -1,15 +1,13 @@
 from typing import List
-
-from praktikum.bun import Bun
-from praktikum.ingredient import Ingredient
-
+from .bun import Bun
+from .ingredient import Ingredient
 
 class Burger:
     """
     Модель бургера.
-    Бургер состоит из булочек и ингредиентов (начинка или соус).
+    Бургер состоит из булочки и ингредиентов (начинка или соус).
     Ингредиенты можно перемещать и удалять.
-    Можно распечать чек с информацией о бургере.
+    Можно распечатать чек с информацией о бургере.
     """
 
     def __init__(self):
@@ -29,7 +27,10 @@ class Burger:
         self.ingredients.insert(new_index, self.ingredients.pop(index))
 
     def get_price(self) -> float:
-        price = self.bun.get_price() * 2
+        if self.bun is None:
+            price = 0
+        else:
+            price = self.bun.get_price() * 2
 
         for ingredient in self.ingredients:
             price += ingredient.get_price()
@@ -37,12 +38,20 @@ class Burger:
         return price
 
     def get_receipt(self) -> str:
-        receipt: List[str] = [f'(==== {self.bun.get_name()} ====)']
+        receipt: List[str] = []
+        if self.bun is not None:
+            receipt.append(f'(==== {self.bun.get_name()} ====)')
+        else:
+            receipt.append('(==== No Bun ====)')
 
         for ingredient in self.ingredients:
-            receipt.append(f'= {str(ingredient.get_type()).lower()} {ingredient.get_name()} =')
+            receipt.append(f'= {ingredient.get_type().lower()} {ingredient.get_name()} =')
 
-        receipt.append(f'(==== {self.bun.get_name()} ====)\n')
+        if self.bun is not None:
+            receipt.append(f'(==== {self.bun.get_name()} ====)\n')
+        else:
+            receipt.append('(==== No Bun ====)\n')
+
         receipt.append(f'Price: {self.get_price()}')
 
         return '\n'.join(receipt)
